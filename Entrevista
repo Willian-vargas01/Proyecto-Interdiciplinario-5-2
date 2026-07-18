@@ -1,0 +1,14 @@
+Requerimientos Funcionales (El "qué" hace el sistema):
+Gestión de Inventario: Control automático de stock (alimentos e insumos).
+Control Pecuario: Registro de aves, seguimiento de alimentación y vacunación.
+Trazabilidad de Lotes: Control de calidad y seguimiento de envíos a clientes.
+Ventas y Finanzas: Registro de ventas, emisión de comprobantes y control de gastos/márgenes.
+Reportes y Alertas: Informes de rendimiento y alertas de stock o vacunas.
+Gestión de Personal: Roles diferenciados (Admin, Supervisor, Empleado) y control de tareas/horarios.
+Requerimientos No Funcionales (El "cómo" funciona):
+Disponibilidad: Acceso 24/7 y monitoreo remoto.
+Rendimiento: Alta velocidad en dispositivos móviles y PCs antiguos.
+Compatibilidad: Diseño responsivo (Celular, Tablet, PC).
+Seguridad: Acceso por QR/Contraseña y backups semanales.
+Usabilidad: Interfaz intuitiva enfocada en la operación.
+
