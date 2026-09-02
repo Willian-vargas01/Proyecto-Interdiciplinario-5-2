@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Avícola</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Sistema Avícola</h2>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Control Pecuario</a></li>
+                <li><a href="#" class="nav-link">Inventario</a></li>
+                <li><a href="#" class="nav-link">Ventas & Finanzas</a></li>
+                <li><a href="#" class="nav-link">Reportes & Alertas</a></li>
+                <li><a href="#" class="nav-link">Gestión de Personal</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <h1>Panel de Control</h1>
+            <button class="btn btn-primary">Escanear QR</button>
+        </header>
+
+        <section class="cards-grid">
+            <div class="card">
+                <h3>Total Aves</h3>
+                <p class="metric">1,250</p>
+            </div>
+            <div class="card">
+                <h3>Stock Alimento</h3>
+                <p class="metric">450 kg</p>
+            </div>
+            <div class="card">
+                <h3>Ventas del Mes</h3>
+                <p class="metric">$3,400.00</p>
+            </div>
+            <div class="card">
+                <h3>Alertas Activas</h3>
+                <p class="metric metric-alert">2</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h3>Registro Rápido de Aves</h3>
+            <form class="inline-form" onsubmit="return false;">
+                <input type="text" placeholder="Código (ej. AVE-001)" required>
+                <input type="text" placeholder="Raza" required>
+                <input type="number" step="0.01" placeholder="Peso (kg)" required>
+                <select required>
+                    <option value="">Seleccionar Lote</option>
+                    <option value="1">Lote 1 - Engorde</option>
+                    <option value="2">Lote 2 - Ponedoras</option>
+                </select>
+                <button type="submit" class="btn btn-success">Guardar Ave</button>
+            </form>
+        </section>
+
+        <section class="content-section">
+            <h3>Listado Reciente de Aves</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Raza</th>
+                            <th>Ingreso</th>
+                            <th>Peso (kg)</th>
+                            <th>Estado Salud</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AVE-001</td>
+                            <td>Cobb 500</td>
+                            <td>2026-08-15</td>
+                            <td>2.30</td>
+                            <td><span class="badge badge-success">Saludable</span></td>
+                        </tr>
+                        <tr>
+                            <td>AVE-002</td>
+                            <td>Ross 308</td>
+                            <td>2026-08-15</td>
+                            <td>2.15</td>
+                            <td><span class="badge badge-warning">En tratamiento</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
