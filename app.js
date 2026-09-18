@@ -1,44 +1,76 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const formAve = document.getElementById('form-ave');
-    const tablaAvesBody = document.getElementById('tabla-aves-body');
-    const totalAvesEl = document.getElementById('total-aves');
-    const btnQr = document.getElementById('btn-qr');
+const loginForm = document.getElementById('login-form');
+const loginSection = document.getElementById('login-section');
+const dashboardSection = document.getElementById('dashboard-section');
+const btnLogout = document.getElementById('btn-logout');
+const welcomeMessage = document.getElementById('welcome-message');
+const dashboardWidgets = document.getElementById('dashboard-widgets');
 
-    let contadorAves = 1250;
+const roleConfig = {
+    dueno: {
+        title: 'Panel de Gerencia General',
+        widgets: [
+            'Reportes Financieros y Trazabilidad',
+            'Control de Managers y Zonas',
+            'Configuración Global del Sistema',
+            'Auditoría de Calidad'
+        ]
+    },
+    admin: {
+        title: 'Panel de Administración de Zona',
+        widgets: [
+            'Gestión de Inventario (Alimento y Vacunas)',
+            'Gestión de Usuarios y Empleados',
+            'Alerta de Stock Mínimo',
+            'Asignación de Tareas'
+        ]
+    },
+    empleado: {
+        title: 'Panel Operativo',
+        widgets: [
+            'Registro Pecuario (Aves y Lotes)',
+            'Registro de Alimentación',
+            'Control de Vacunación',
+            'Consultar Tareas Pendientes'
+        ]
+    },
+    cliente: {
+        title: 'Portal de Clientes',
+        widgets: [
+            'Catálogo de Lotes Disponibles',
+            'Mis Compras y Facturas',
+            'Seguimiento de Envíos',
+            'Certificados de Calidad'
+        ]
+    }
+};
 
-    // Manejar el envio del formulario (Agregar nueva ave dinamicamente)
-    formAve.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // Obtener valores del formulario
-        const codigo = document.getElementById('codigo').value;
-        const raza = document.getElementById('raza').value;
-        const peso = parseFloat(document.getElementById('peso').value).toFixed(2);
-        const fechaIngreso = new Date().toISOString().split('T')[0];
-
-        // Crear nueva fila para la tabla
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${codigo}</td>
-            <td>${raza}</td>
-            <td>${fechaIngreso}</td>
-            <td>${peso}</td>
-            <td><span class="badge badge-success">Saludable</span></td>
-        `;
-
-        // Insertar la fila al inicio de la tabla
-        tablaAvesBody.prepend(tr);
-
-        // Actualizar el contador de aves
-        contadorAves++;
-        totalAvesEl.textContent = contadorAves.toLocaleString();
-
-        // Limpiar el formulario
-        formAve.reset();
-    });
-
-    // Evento para simular la accion de escanear un QR
-    btnQr.addEventListener('click', () => {
-        alert('Iniciando camara para lectura de codigo QR...');
-    });
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const role = document.getElementById('role-simulator').value;
+    loadDashboard(role);
 });
+
+btnLogout.addEventListener('click', () => {
+    dashboardSection.classList.add('hidden');
+    btnLogout.classList.add('hidden');
+    loginSection.classList.remove('hidden');
+    loginForm.reset();
+});
+
+function loadDashboard(role) {
+    loginSection.classList.add('hidden');
+    dashboardSection.classList.remove('hidden');
+    btnLogout.classList.remove('hidden');
+
+    const config = roleConfig[role];
+    welcomeMessage.textContent = config.title;
+    
+    dashboardWidgets.innerHTML = '';
+    
+    config.widgets.forEach(widgetText => {
+        const widget = document.createElement('div');
+        widget.className = 'widget';
+        widget.innerHTML = `<h3>${widgetText}</h3><p>Acceder al módulo...</p>`;
+        dashboardWidgets.appendChild(widget);
+    });
+}
