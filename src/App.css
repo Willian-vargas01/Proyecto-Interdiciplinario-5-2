@@ -1,0 +1,259 @@
+/* ==========================================================================
+   1. VARIABLES DE ENTORNO Y CONFIGURACIÓN GLOBAL (HTML Y BODY)
+   ========================================================================== */
+   body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Colores por defecto (Modo Claro) */
+  :root {
+    --bg-principal: #ffffff;
+    --bg-tarjetas: #f8f9fa;
+    --texto-principal: #212529;
+    --texto-mutado: #6c757d;
+    --borde-color: #dee2e6;
+  }
+  
+  /* Colores cuando se activa el Modo Oscuro */
+  [data-theme='dark'] {
+    --bg-principal: #121212;
+    --bg-tarjetas: #1e1e1e;
+    --texto-principal: #f8f9fa;
+    --texto-mutado: #a8a8a8;
+    --borde-color: #333333;
+  }
+  
+  /* Aplicación global con transición suave para no cansar la vista */
+  body {
+    background-color: var(--bg-principal) !important;
+    color: var(--texto-principal) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* ==========================================================================
+     2. ESTILOS PROPIOS DE KEKE COMPANY (DISEÑO GENERAL)
+     ========================================================================== */
+  .bg-orange { 
+    background-color: #fd7e14; 
+    color: white; 
+  }
+  
+  .text-orange { 
+    color: #fd7e14; 
+  }
+  
+  .btn-orange { 
+    background-color: #fd7e14; 
+    border-color: #fd7e14; 
+    color: white; 
+  }
+  
+  .btn-orange:hover {
+    background-color: #e37012;
+    border-color: #e37012;
+    color: white;
+  }
+  
+  /* Imagen de fondo del Hero con degradado oscuro interactivo */
+  .hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('./assets/gallinas.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: calc(100vh - 110px); 
+    color: white;
+  }
+  
+  /* Animación de carrusel informativo continuo (Azul de día) */
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    background-color: #0d6efd; 
+    color: white;
+    padding: 8px 0;
+    white-space: nowrap;
+  }
+  
+  .marquee-content {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+    font-weight: bold;
+  }
+  
+  @keyframes marquee {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  /* Íconos estéticos del Footer de la granja */
+  .social-icon {
+    font-size: 2rem;
+    color: white;
+    margin: 0 10px;
+    transition: transform 0.3s, color 0.3s;
+  }
+  
+  .social-icon:hover {
+    transform: scale(1.2);
+    color: #fd7e14; 
+  }
+  
+  /* ==========================================================================
+     3. TRANSFORMACIÓN TOTAL DE AZUL A NARANJA (SÓLO MODO OSCURO)
+     ========================================================================== */
+  [data-theme='dark'] .marquee-container {
+    background-color: #fd7e14 !important;
+  }
+  
+  [data-theme='dark'] .btn-primary {
+    background-color: #fd7e14 !important;
+    border-color: #fd7e14 !important;
+    color: white !important;
+  }
+  
+  [data-theme='dark'] .btn-primary:hover {
+    background-color: #e37012 !important;
+    border-color: #e37012 !important;
+  }
+  
+  [data-theme='dark'] .text-primary,
+  [data-theme='dark'] h2.text-primary,
+  [data-theme='dark'] .navbar-brand .text-primary,
+  [data-theme='dark'] span.text-primary {
+    color: #fd7e14 !important;
+  }
+  
+  /* ==========================================================================
+     4. CORRECCIONES CRÍTICAS PARA TUS 8 PANELES Y TIENDA (MODO OSCURO)
+     ========================================================================== */
+  
+  /* Fuerza la barra de navegación superior */
+  [data-theme='dark'] .navbar {
+    background-color: var(--bg-tarjetas) !important;
+    border-bottom: 1px solid var(--borde-color) !important;
+  }
+  
+  /* Fuerza las tarjetas de Lotes, Inventario, Nutrición y Tienda */
+  [data-theme='dark'] .card {
+    background-color: var(--bg-tarjetas) !important;
+    color: var(--texto-principal) !important;
+    border-color: var(--borde-color) !important;
+  }
+  
+  /* Blanquea los encabezados de las tarjetas que tengan bg estático */
+  [data-theme='dark'] .card-header {
+    background-color: #262626 !important;
+    color: #fd7e14 !important;
+    border-bottom: 1px solid var(--borde-color) !important;
+  }
+  
+  /* Desactiva los fondos blancos/claros rígidos de Bootstrap en Grillas y Tablas */
+  [data-theme='dark'] .bg-white,
+  [data-theme='dark'] .bg-light,
+  [data-theme='dark'] .table,
+  [data-theme='dark'] .admin-container,
+  [data-theme='dark'] .p-4 {
+    background-color: var(--bg-principal) !important;
+    color: var(--texto-principal) !important;
+  }
+  
+  /* Estilizado unificado para las cabeceras de todas tus tablas */
+  [data-theme='dark'] .table thead,
+  [data-theme='dark'] .table thead.table-dark,
+  [data-theme='dark'] .table thead.bg-secondary {
+    background-color: #222222 !important;
+    color: #fd7e14 !important;
+  }
+  
+  [data-theme='dark'] .table thead th {
+    background-color: #222222 !important;
+    color: #fd7e14 !important;
+    border-color: var(--borde-color) !important;
+  }
+  
+  /* Celdas de las tablas de Personal, Sanidad, Ventas, etc. */
+  [data-theme='dark'] .table td, 
+  [data-theme='dark'] .table th {
+    background-color: var(--bg-tarjetas) !important;
+    color: var(--texto-principal) !important;
+    border-color: var(--borde-color) !important;
+  }
+  
+  /* Efecto hover nocturno en las filas para que mantenga visibilidad */
+  [data-theme='dark'] .table-hover tbody tr:hover {
+    background-color: #282828 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Modales e inputs de los formularios de registro de empleados y compras */
+  [data-theme='dark'] .modal-content,
+  [data-theme='dark'] .modal-body,
+  [data-theme='dark'] .modal-header {
+    background-color: var(--bg-tarjetas) !important;
+    color: var(--texto-principal) !important;
+    border-color: var(--borde-color) !important;
+  }
+  
+  [data-theme='dark'] .form-control,
+  [data-theme='dark'] .form-select {
+    background-color: var(--bg-principal) !important;
+    color: var(--texto-principal) !important;
+    border: 1px solid var(--borde-color) !important;
+  }
+  
+  [data-theme='dark'] .form-control:focus,
+  [data-theme='dark'] .form-select:focus {
+    background-color: var(--bg-principal) !important;
+    color: #ffffff !important;
+    border-color: #fd7e14 !important;
+    box-shadow: 0 0 0 0.25rem rgba(253, 126, 20, 0.25) !important;
+  }
+  
+  /* Estilo para los textos mutados o secundarios */
+  [data-theme='dark'] .text-muted,
+  [data-theme='dark'] .text-secondary {
+    color: var(--texto-mutado) !important;
+  }
+  
+  /* Corrección de alertas en modo nocturno */
+  [data-theme='dark'] .alert-info {
+    background-color: #0b293a !important;
+    color: #6edff6 !important;
+    border-color: #061c28 !important;
+  }
+  [data-theme='dark'] .alert-warning {
+    background-color: #332701 !important;
+    color: #ffda6a !important;
+    border-color: #241c00 !important;
+  }
+  /* Forzar visibilidad del panel de control sin depender de emojis */
+[data-theme='dark'] .dashboard-content-wrapper {
+  background-color: var(--bg-principal) !important;
+}
+
+[data-theme='dark'] .content-display-box {
+  background-color: var(--bg-tarjetas) !important;
+  color: var(--texto-principal) !important;
+}
+/* Corrección de herencia para el panel en modo claro */
+.panel-principal-fix {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+}
+.contenedor-interno-fix {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+}
+
+/* Switch dinámico exclusivo para el Modo Oscuro */
+[data-theme='dark'] .panel-principal-fix {
+  background-color: #121212 !important;
+  color: #f8f9fa !important;
+}
+[data-theme='dark'] .contenedor-interno-fix {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+}
