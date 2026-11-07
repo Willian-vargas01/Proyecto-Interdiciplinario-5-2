@@ -16,7 +16,7 @@ function NavBar({ usersDB, setUsersDB, currentUser, setCurrentUser, setCurrentVi
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Separamos el nombre en nombre y apellido simulado para tu base de datos
+
     const partesNombre = regName.split(" ");
     const nombreDefecto = partesNombre[0];
     const apellidoDefecto = partesNombre.slice(1).join(" ") || "Web";
@@ -25,7 +25,7 @@ function NavBar({ usersDB, setUsersDB, currentUser, setCurrentUser, setCurrentVi
       nombre: nombreDefecto,
       apellido: apellidoDefecto,
       email: regEmail,
-      password: regPassword, // Tu JsonProperty en Java lo asimila en passwordHash
+      password: regPassword, 
       role: 'cliente'
     };
 
