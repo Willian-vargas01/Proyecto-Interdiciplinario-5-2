@@ -174,6 +174,41 @@ DELIMITER ;
 -- STORED PROCEDURES 
 -- =========================================================================
 
+
+
+DROP PROCEDURE IF EXISTS sp_registrarLoteTransaccional;
+DELIMITER //
+
+CREATE PROCEDURE sp_registrarLoteTransaccional(
+    IN p_codigo_lote VARCHAR(50),
+    IN p_fecha_ingreso DATE,
+    IN p_cantidad INT,
+    IN p_precio_unitario DOUBLE
+)
+BEGIN
+    DECLARE v_id_lote INT;
+    DECLARE v_contador INT DEFAULT 1;
+    DECLARE v_codigo_ave VARCHAR(50);
+
+    -- 1. Insertamos el lote principal
+    INSERT INTO lote (codigo_lote, fecha_ingreso, cantidad_inicial, cantidad_actual, estado, precio_unitario)
+    VALUES (p_codigo_lote, p_fecha_ingreso, p_cantidad, p_cantidad, 'EN_CRECIMIENTO', p_precio_unitario);
+
+    -- Obtenemos el ID recién generado del lote
+    SET v_id_lote = LAST_INSERT_ID();
+
+    -- 2. Bucle para generar automáticamente las N aves vinculadas a ese lote
+    WHILE v_contador <= p_cantidad DO
+        SET v_codigo_ave = CONCAT(p_codigo_lote, '-AVE-', LPAD(v_contador, 3, '0'));
+        
+        INSERT INTO ave (id_lote, codigo_ave, raza, peso_kg, estado_salud)
+        VALUES (v_id_lote, v_codigo_ave, 'Cobb 500', 2.40, 'Sano');
+        
+        SET v_contador = v_contador + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
 DROP PROCEDURE IF EXISTS sp_AvesPorLote;
 DELIMITER //
 CREATE PROCEDURE sp_AvesPorLote(IN p_id_lote INT)
@@ -472,17 +507,87 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS sp_resolverSolicitud;
 DELIMITER //
-CREATE PROCEDURE sp_resolverSolicitud(IN p_id_solicitud INT, IN p_estado VARCHAR(20), IN p_id_revisor INT, IN p_motivo VARCHAR(255))
+
+CREATE PROCEDURE sp_resolverSolicitud(
+    IN p_id_solicitud INT, 
+    IN p_estado VARCHAR(20), 
+    IN p_id_revisor INT, 
+    IN p_motivo VARCHAR(255)
+)
 BEGIN
-    UPDATE solicitud SET estado = p_estado, id_revisor = p_id_revisor, fecha_revision = NOW(), motivo = p_motivo WHERE id_solicitud = p_id_solicitud AND estado = 'Pendiente';
-    IF v_accion = 'REGISTRAR_LOTE' THEN
-    SET v_codigo = JSON_UNQUOTE(JSON_EXTRACT(v_datos, '$.codigo_lote'));
-    SET v_cantidad = CAST(JSON_EXTRACT(v_datos, '$.cantidad_inicial') AS UNSIGNED);
-    
-    CALL sp_registrarLoteTransaccional(v_codigo, CURDATE(), v_cantidad, 2500.0);
-END IF;
+    -- 1. Declaramos todas las variables que vamos a usar
+    DECLARE v_accion VARCHAR(50);
+    DECLARE v_datos TEXT;
+    DECLARE v_solicitante INT;
+    DECLARE v_codigo VARCHAR(50);
+    DECLARE v_cantidad INT;
+    DECLARE v_id_lote INT;
+    DECLARE v_id_inv INT;
+    DECLARE v_cant_dec DECIMAL(10,2);
+
+    -- 2. Leemos los datos de la solicitud pendiente ANTES de actualizarla
+    SELECT accion, datos, id_solicitante 
+    INTO v_accion, v_datos, v_solicitante
+    FROM solicitud 
+    WHERE id_solicitud = p_id_solicitud AND estado = 'Pendiente';
+
+    -- 3. Actualizamos el estado de la solicitud
+    UPDATE solicitud 
+    SET estado = p_estado, 
+        id_revisor = p_id_revisor, 
+        fecha_revision = NOW(), 
+        motivo = p_motivo 
+    WHERE id_solicitud = p_id_solicitud AND estado = 'Pendiente';
+
+    -- 4. Solo ejecutamos los cambios reales si fue APROBADA
+    IF p_estado = 'Aprobada' THEN
+
+        -- CASO A: CREAR LOTE Y SUS AVES
+        IF v_accion = 'REGISTRAR_LOTE' THEN
+            SET v_codigo = JSON_UNQUOTE(JSON_EXTRACT(v_datos, '$.codigo_lote'));
+            SET v_cantidad = CAST(JSON_EXTRACT(v_datos, '$.cantidad_inicial') AS UNSIGNED);
+            CALL sp_registrarLoteTransaccional(v_codigo, CURDATE(), v_cantidad, 2500.0);
+
+        -- CASO B: REGISTRAR ALIMENTACIÓN
+        ELSEIF v_accion = 'REGISTRAR_ALIMENTACION' THEN
+            SET v_id_lote = CAST(JSON_EXTRACT(v_datos, '$.id_lote') AS UNSIGNED);
+            SET v_id_inv = CAST(JSON_EXTRACT(v_datos, '$.id_inventario') AS UNSIGNED);
+            SET v_cant_dec = CAST(JSON_EXTRACT(v_datos, '$.cantidad_kg') AS DECIMAL(10,2));
+            INSERT INTO alimentacion (id_lote, id_inventario, cantidad_kg) 
+            VALUES (v_id_lote, v_id_inv, v_cant_dec);
+
+        -- CASO C: REGISTRAR VACUNACIÓN
+        ELSEIF v_accion = 'REGISTRAR_VACUNACION' THEN
+            SET v_id_lote = CAST(JSON_EXTRACT(v_datos, '$.id_lote') AS UNSIGNED);
+            SET v_id_inv = CAST(JSON_EXTRACT(v_datos, '$.id_inventario') AS UNSIGNED);
+            SET v_cant_dec = CAST(JSON_EXTRACT(v_datos, '$.dosis_aplicada') AS DECIMAL(10,2));
+            INSERT INTO vacunacion (id_lote, id_inventario, fecha_aplicacion, dosis_aplicada, id_empleado) 
+            VALUES (v_id_lote, v_id_inv, CURDATE(), v_cant_dec, v_solicitante);
+
+        -- CASO D: NUEVO INSUMO EN INVENTARIO
+        ELSEIF v_accion = 'REGISTRAR_INVENTARIO' THEN
+            INSERT INTO inventario (producto, tipo, stock, unidad, minimo)
+            VALUES (
+                JSON_UNQUOTE(JSON_EXTRACT(v_datos, '$.producto')),
+                JSON_UNQUOTE(JSON_EXTRACT(v_datos, '$.tipo')),
+                CAST(JSON_EXTRACT(v_datos, '$.stock') AS DECIMAL(10,2)),
+                JSON_UNQUOTE(JSON_EXTRACT(v_datos, '$.unidad')),
+                CAST(JSON_EXTRACT(v_datos, '$.minimo') AS DECIMAL(10,2))
+            );
+
+        -- CASO E: REPONER STOCK EXISTENTE
+        ELSEIF v_accion = 'REPONER_STOCK' THEN
+            SET v_id_inv = CAST(JSON_EXTRACT(v_datos, '$.id_inventario') AS UNSIGNED);
+            SET v_cant_dec = CAST(JSON_EXTRACT(v_datos, '$.cantidad') AS DECIMAL(10,2));
+            UPDATE inventario SET stock = stock + v_cant_dec WHERE id_inventario = v_id_inv;
+
+        END IF;
+
+    END IF;
 END //
+
 DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS sp_retirarStock;
 DELIMITER //
@@ -492,7 +597,3 @@ BEGIN
     IF ROW_COUNT() = 0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Stock insuficiente'; END IF;
 END //
 DELIMITER ;
-
-
-
-
